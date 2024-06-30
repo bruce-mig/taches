@@ -1,22 +1,23 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from './security/AuthContext'
 
 
 function LoginComponent() {
 
     const [username, setUsername] = useState('name')
     const [password, setPassword] = useState('')
-    const [showSuccessMsg, setShowSuccessMsg] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
     const navigate = useNavigate()
+    const authContext = useAuth()
 
     return (
         <div className="Login">
-            {showSuccessMsg && <div className="successMessage">Authenticated Successfully</div>}
-            {showErrorMsg && <div className="errorMessage">Authentication failed. Please check your credentials.</div>}
             <div className="LoginForm">
                 <h1>Please Login</h1>
-                <div>
+                {showErrorMsg && <div className="errorMessage">Authentication failed. Please check your credentials.</div>}
+
+                <div className='LoginForm'>
                     <label>User Name</label>
                     <input type="text" name="username" value={username}
                         onChange={(event) => setUsername(event.target.value)} />
@@ -30,14 +31,9 @@ function LoginComponent() {
                     <button type="button" name="login"
                         onClick={
                             () => {
-                                if (username === 'name' && password === 'secret') {
-                                    console.log('Success')
-                                    setShowSuccessMsg(true)
-                                    setShowErrorMsg(false)
+                                if (authContext.login(username, password)) {
                                     navigate(`/welcome/${username}`)
                                 } else {
-                                    console.log('Authentication failed')
-                                    setShowSuccessMsg(false)
                                     setShowErrorMsg(true)
                                 }
                             }
