@@ -1,30 +1,52 @@
 import { useEffect, useState } from "react"
-import { retrieveAllUserTodos } from "./api/TodoApiService"
+import { deleteTodoApi, retrieveAllUserTodosApi } from "./api/TodoApiService"
+import { useAuth } from "./security/AuthContext"
 
 function ListTodosComponent() {
+    const authContext = useAuth()
+    const username = authContext.username
+
     const [todos, setTodos] = useState([])
+    const [message, setMessage] = useState(null)
 
     useEffect(() => refreshTodos, [])
 
     function refreshTodos() {
-        retrieveAllUserTodos('name')
+        retrieveAllUserTodosApi(username)
             .then((response) => {
                 setTodos(response.data)
             })
             .catch((error) => console.log(error))
             .finally(() => console.log('cleanup'))
     }
+
+    function deleteTodo(id) {
+        deleteTodoApi(username, id)
+            .then(
+                () => {
+                    //1: Display message
+                    setMessage(`Successfully deleted todo with id: ${id}`)
+
+                    //2: Update Todos
+                    refreshTodos()
+                }
+            )
+            .catch((error) => console.log(error))
+            .finally(() => console.log('cleanup'))
+    }
     return (
         <div className='container'>
             <h1>Liste de Taches!</h1>
+            {message && <div className="alert alert-warning">{message}</div>}
+
             <div>
                 <table className='table'>
                     <thead>
                         <tr>
-                            <td>Id</td>
-                            <td>Description</td>
-                            <td>Done</td>
-                            <td>Target Date</td>
+                            <th>Description</th>
+                            <th>Done</th>
+                            <th>Target Date</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,11 +54,12 @@ function ListTodosComponent() {
                             todos.map(
                                 todo => (
                                     <tr key={todo.id}>
-                                        <td>{todo.id}</td>
                                         <td>{todo.description}</td>
                                         <td>{todo.done.toString()}</td>
-                                        {/* <td>{todo.targetDate.toDateString()}</td> */}
                                         <td>{todo.targetDate.toString()}</td>
+                                        <td><button className="btn btn-warning"
+                                            onClick={() => deleteTodo(todo.id)}
+                                        >Delete</button></td>
                                     </tr>
                                 )
                             )
