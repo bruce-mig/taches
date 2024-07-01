@@ -8,7 +8,7 @@ import ErrorComponent from './ErrorComponent'
 import WelcomeComponent from './WelcomeComponent'
 import LoginComponent from './LoginComponent'
 import AuthProvider, { useAuth } from './security/AuthContext'
-import TodoComponent from '../TodoComponent'
+import TodoComponent from './TodoComponent'
 
 function AuthenticatedRoute({ children }) {
     const authContext = useAuth()
