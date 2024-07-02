@@ -30,8 +30,8 @@ function LoginComponent() {
                 <div>
                     <button type="button" name="login"
                         onClick={
-                            () => {
-                                if (authContext.login(username, password)) {
+                            async () => {
+                                if (await authContext.login(username, password)) {
                                     navigate(`/welcome/${username}`)
                                 } else {
                                     setShowErrorMsg(true)
